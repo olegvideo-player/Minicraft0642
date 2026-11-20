@@ -724,21 +724,20 @@ var dx = Math.sin(player.yaw) * cosP;
 var dy = Math.sin(player.pitch);
 var dz = Math.cos(player.yaw) * cosP;
 var prev = null;
-for (var step = 0.2; step <= 7.5; step += 0.025) {
+for (var step = 0.0; step <= 7.5; step += 0.025) {
 var px = player.x + dx * step;
 var py = player.y + dy * step;
 var pz = player.z + dz * step;
-    for (var mi = 0; mi < mobs.length; mi++) {
-      var m = mobs[mi];
-      var mH = m.type === 'zombie' ? 1.7 : 1.0;
-            if (Math.hypot(px - m.x, pz - m.z) < 0.95 && py >= m.y - 0.1 && py <= m.y + mH) {
-        return { mob: m };
-      }
-    }
-    var rx = Math.floor(px);
-    var ry = Math.floor(py);
-    var rz = Math.floor(pz);
-
+for (var mi = 0; mi < mobs.length; mi++) {
+var m = mobs[mi];
+var mH = m.type === 'zombie' ? 1.7 : 1.0;
+if (Math.hypot(px - m.x, pz - m.z) < 0.95 && py >= m.y - 0.1 && py <= m.y + mH) {
+return { mob: m };
+}
+}
+var rx = Math.floor(px);
+var ry = Math.floor(py);
+var rz = Math.floor(pz);
 if (hasBlock(rx, ry, rz)) return { hit: { x: rx, y: ry, z: rz }, prev: prev };
 prev = { x: rx, y: ry, z: rz };
 }
@@ -1244,9 +1243,10 @@ for (var mi = 0; mi < mobs.length; mi++) {
 var m = mobs[mi];
 m.timer--;
 if (m.hurt > 0) m.hurt--;
+var distToPlayer = Math.hypot(player.x - m.x, player.z - m.z);
 if (m.type === 'zombie' && isPlaying && gameMode === 'survival') {
 m.yaw = Math.atan2(player.x - m.x, player.z - m.z);
-if (Math.hypot(player.x - m.x, player.z - m.z) < 1.1 && hurtCooldown === 0) {
+if (distToPlayer < 1.5 && hurtCooldown === 0) {
 playerHP = Math.max(0, playerHP - 2);
 hurtCooldown = 45;
 playSound('hit');
@@ -1258,12 +1258,13 @@ m.timer = 60 + Math.random() * 120;
 }
 var mSpeed = m.hurt > 0 ? 0.065 : (m.type === 'zombie' ? 0.032 : 0.018);
 m.walkPhase += mSpeed * 8;
+var stopNear = (m.type === 'zombie' && isPlaying && distToPlayer < 1.35 && m.hurt === 0);
 var nx = m.x + Math.sin(m.yaw) * mSpeed;
 var nz = m.z + Math.cos(m.yaw) * mSpeed;
-if (!isSolidAt(nx, m.y + 0.25, nz)) {
+if (!stopNear && !isSolidAt(nx, m.y + 0.25, nz)) {
 m.x = nx;
 m.z = nz;
-} else if (m.vy === 0) {
+} else if (!stopNear && m.vy === 0) {
 m.vy = 0.15;
 }
 m.vy -= 0.009;
@@ -1449,47 +1450,45 @@ document.addEventListener('mousemove', function(e) {
 if (!isPlaying || document.pointerLockElement !== canvas) return;
 player.yaw += e.movementX * sensitivity * 0.45;
 player.pitch -= e.movementY * sensitivity * 0.45;
-  player.pitch = Math.max(-1.45, Math.min(1.45, player.pitch));
+player.pitch = Math.max(-1.45, Math.min(1.45, player.pitch));
 });
 var tapStartPos = { x: 0, y: 0, time: 0 };
-
 canvas.addEventListener('touchstart', function(e) {
-  if (!isPlaying || e.changedTouches.length === 0) return;
-  var t = e.changedTouches.item(0);
-  tapStartPos = { x: t.clientX, y: t.clientY, time: Date.now() };
+if (!isPlaying || e.changedTouches.length === 0) return;
+var t = e.changedTouches.item(0);
+tapStartPos = { x: t.clientX, y: t.clientY, time: Date.now() };
 });
-
 canvas.addEventListener('touchend', function(e) {
-  if (!isPlaying || e.changedTouches.length === 0) return;
-  var t = e.changedTouches.item(0);
-  var dist = Math.hypot(t.clientX - tapStartPos.x, t.clientY - tapStartPos.y);
-  if (dist < 25 && Date.now() - tapStartPos.time < 400) {
-    var hitMob = null;
-    var bestZ = 999;
-    for (var i = 0; i < mobs.length; i++) {
-      var m = mobs[i];
-      if (Math.hypot(m.x - player.x, m.z - player.z) > 7.5) continue;
-      var p = project(m.x, m.y + 0.55, m.z, player.x, player.y, player.z, player.yaw, player.pitch);
-      if (p && p.z < bestZ && Math.hypot(t.clientX - p.x, t.clientY - p.y) < 85) {
-        bestZ = p.z;
-        hitMob = m;
-      }
-    }
-    if (hitMob) {
-      swingAnim = 1;
-      hitMob.hurt = 15;
-      hitMob.vy = 0.14;
-      hitMob.yaw = player.yaw;
-      var dmg = hotbarTypes[activeSlot] === 'sword' ? 2 : 1;
-      hitMob.hp = (hitMob.hp || 3) - dmg;
-      playSound('hit');
-      if (hitMob.hp <= 0) {
-        mobs.splice(mobs.indexOf(hitMob), 1);
-        invCounts.apple = (invCounts.apple || 0) + 1;
-        updateHotbarUI();
-      }
-    }
-  }
+if (!isPlaying || e.changedTouches.length === 0) return;
+var t = e.changedTouches.item(0);
+var dist = Math.hypot(t.clientX - tapStartPos.x, t.clientY - tapStartPos.y);
+if (dist < 25 && Date.now() - tapStartPos.time < 400) {
+var hitMob = null;
+var bestZ = 999;
+for (var i = 0; i < mobs.length; i++) {
+var m = mobs[i];
+var d3d = Math.hypot(m.x - player.x, m.z - player.z);
+if (d3d > 7.5) continue;
+var p = project(m.x, m.y + 0.55, m.z, player.x, player.y, player.z, player.yaw, player.pitch);
+if (d3d < 1.8 || (p && p.z < bestZ && Math.hypot(t.clientX - p.x, t.clientY - p.y) < 95)) {
+bestZ = p ? p.z : 0.5;
+hitMob = m;
+}
+}
+if (hitMob) {
+swingAnim = 1;
+hitMob.hurt = 15;
+hitMob.vy = 0.14;
+hitMob.yaw = player.yaw;
+var dmg = hotbarTypes[activeSlot] === 'sword' ? 2 : 1;
+hitMob.hp = (hitMob.hp || 3) - dmg;
+playSound('hit');
+if (hitMob.hp <= 0) {
+mobs.splice(mobs.indexOf(hitMob), 1);
+invCounts.apple = (invCounts.apple || 0) + 1;
+updateHotbarUI();
+}
+}
+}
 });
-
 loop();
