@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MiniCraft0642</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+    body { overflow: hidden; background: #87CEEB; font-family: monospace, sans-serif; touch-action: none; }
+    canvas { display: block; width: 100vw; height: 100vh; position: fixed; inset: 0; z-index: 1; }
+    .screen { position: fixed; inset: 0; background: rgba(0,0,0,0.25); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; color: #fff; padding: 10px; }
+    .screen.dark { background: rgba(0,0,0,0.85); }
+    .hidden { display: none !important; }
+    .mc-logo { font-size: 30px; font-weight: 900; text-shadow: 0 3px 0 #3f3f3f, 0 5px 8px #000; margin-bottom: 2px; }
+    @keyframes splashPulse { 0%, 100% { transform: rotate(-6deg) scale(1); } 50% { transform: rotate(-6deg) scale(1.16); } }
+    .mc-splash { color: #ffff55; font-size: 13px; font-weight: bold; text-shadow: 2px 2px #3f3f00; margin-top: -6px; margin-bottom: 12px; margin-left: 120px; animation: splashPulse 0.85s infinite ease-in-out; }
+    .mc-btn { width: 220px; padding: 8px; margin: 3px 0; background: rgba(114,114,114,0.95); color: #fff; font-weight: bold; font-size: 13px; text-align: center; border: 2px solid #000; box-shadow: inset 2px 2px #aaa, inset -2px -3px #444; text-shadow: 2px 2px #222; }
+    .mc-btn:active { background: #5a7d4c; }
+    .mc-btn.small { width: 106px; padding: 6px 4px; font-size: 11px; }
+    .mc-btn.selected { background: #4CAF50; }
+    .form-box { background: rgba(30,30,30,0.95); border: 2px solid #666; padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; width: 270px; margin-bottom: 6px; font-size: 11px; }
+    .btn-group { display: flex; gap: 5px; justify-content: space-between; }
+    input[type=text] { background: #111; border: 2px solid #777; color: #fff; padding: 5px; user-select: text; -webkit-user-select: text; touch-action: auto; }
+    .skin-layout { display: flex; gap: 14px; align-items: center; margin-bottom: 8px; }
+    #skin-preview { width: 90px; height: 150px; background: rgba(255,255,255,0.1); border: 2px solid #777; }
+    .color-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .swatch { width: 22px; height: 22px; border: 2px solid #fff; border-radius: 4px; }
+    #pause-btn { position: fixed; top: 10px; left: 10px; width: 34px; height: 34px; background: rgba(0,0,0,0.6); border: 2px solid #fff; border-radius: 6px; color: #fff; font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 30; }
+    #time-btn { position: fixed; top: 10px; left: 52px; padding: 0 8px; height: 34px; background: rgba(0,0,0,0.6); border: 2px solid #ffd54f; border-radius: 6px; color: #ffd54f; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; z-index: 30; }
+    #world-info { position: fixed; top: 10px; right: 12px; color: #fff; font-size: 11px; text-shadow: 1px 1px #000; z-index: 30; text-align: right; }
+    #crosshair { position: fixed; top: 50%; left: 50%; width: 16px; height: 16px; transform: translate(-50%,-50%); pointer-events: none; z-index: 10; }
+    #crosshair::before, #crosshair::after { content: ''; position: absolute; background: #fff; }
+    #crosshair::before { top: 7px; left: 0; width: 16px; height: 2px; }
+    #crosshair::after { top: 0; left: 7px; width: 2px; height: 16px; }
+    #dpad { position: fixed; bottom: 14px; left: 16px; display: grid; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); gap: 3px; z-index: 25; }
+    .dpad-btn { background: rgba(130, 130, 130, 0.55); border: 2px solid rgba(40, 40, 40, 0.75); box-shadow: inset 2px 2px rgba(255,255,255,0.35), inset -2px -2px rgba(0,0,0,0.4); color: rgba(30, 30, 30, 0.85); font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+    .dpad-btn.active { background: rgba(180, 180, 180, 0.85); transform: scale(0.95); }
+    .dpad-diag { width: 38px; height: 38px; align-self: end; transition: opacity 0.1s; }
+    .dpad-diag.hidden-diag { opacity: 0; pointer-events: none; }
+    #actions { position: fixed; bottom: 16px; right: 18px; display: flex; flex-direction: column; gap: 7px; z-index: 20; }
+    .row { display: flex; gap: 7px; justify-content: flex-end; }
+    .btn { width: 58px; height: 48px; background: rgba(0,0,0,0.6); border: 2px solid #fff; border-radius: 9px; color: #fff; font-weight: bold; font-size: 10px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    #hotbar { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; z-index: 20; background: rgba(0,0,0,0.6); padding: 4px; border: 2px solid #333; }
+    .slot { width: 34px; height: 34px; border: 2px solid #222; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 9px; text-align: center; white-space: pre-line; }
+    .slot.active { border: 3px solid #fff; transform: scale(1.08); }
+    #inv-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 90; }
+    .inv-window { background: #8b8b8b; border: 3px solid #222; padding: 10px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+    .inv-grid { display: grid; grid-template-columns: repeat(6, 42px); gap: 5px; }
+    .inv-item { width: 42px; height: 42px; border: 2px solid #333; display: flex; align-items: flex-end; justify-content: center; font-size: 8px; color: #fff; text-shadow: 1px 1px #000; padding-bottom: 2px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div id="menu" class="screen">
+    <div class="mc-logo">MiniCraft0642</div>
+    <div class="mc-splash">New Game!</div>
+    <div class="mc-btn" onclick="startContinue()">Продолжить мир</div>
+    <div class="mc-btn" onclick="showScreen('create')">Создать новый мир</div>
+    <div class="mc-btn" onclick="showScreen('skin')">Редактор скина</div>
+    <div class="mc-btn" onclick="showScreen('settings')">Настройки</div>
+  </div>
+
+  <div id="skin-menu" class="screen dark hidden">
+    <div class="mc-logo" style="font-size:20px;margin-bottom:6px;">Редактор Скина</div>
+    <div class="skin-layout">
+      <canvas id="skin-preview" width="90" height="150"></canvas>
+      <div class="form-box" style="width:220px;margin:0;">
+        <div class="color-row"><span>Волосы:</span><div style="display:flex;gap:4px;" id="hair-colors"></div></div>
+        <div class="color-row"><span>Кожа:</span><div style="display:flex;gap:4px;" id="skin-colors"></div></div>
+        <div class="color-row"><span>Майка:</span><div style="display:flex;gap:4px;" id="shirt-colors"></div></div>
+        <div class="color-row"><span>Штаны:</span><div style="display:flex;gap:4px;" id="pants-colors"></div></div>
+        <input type="file" id="skin-file-input" accept="image/png,image/*" style="display:none;" onchange="importMinecraftSkin(this)">
+        <div class="mc-btn" style="width:100%;padding:6px;font-size:11px;background:#1976D2;" onclick="document.getElementById('skin-file-input').click()">Импорт скина (.png)</div>
+      </div>
+    </div>
+    <div class="mc-btn" onclick="saveSkin();showScreen('menu')">Сохранить и выйти</div>
+  </div>
+
+  <div id="create-menu" class="screen dark hidden">
+    <div class="mc-logo" style="font-size:20px;margin-bottom:6px;">Создание мира</div>
+    <div class="form-box">
+      <span>Название мира:</span>
+      <input type="text" id="world-name-input" value="Мой Мир" maxlength="18">
+      <span>Режим игры:</span>
+      <div class="btn-group" id="game-mode-group">
+        <div class="mc-btn small selected" onclick="selectGameMode(this,'survival')">Выживание</div>
+        <div class="mc-btn small" onclick="selectGameMode(this,'creative')">Креатив</div>
+      </div>
+      <span>Тип генерации:</span>
+      <div class="btn-group" id="gen-type-group">
+        <div class="mc-btn small selected" onclick="selectType(this,'hills')">Холмы</div>
+        <div class="mc-btn small" onclick="selectType(this,'flat')">Плоский</div>
+        <div class="mc-btn small" onclick="selectType(this,'island')">Остров</div>
+      </div>
+      <span>Размер мира:</span>
+      <div class="btn-group" id="gen-size-group">
+        <div class="mc-btn small" onclick="selectSize(this,8)">Малый</div>
+        <div class="mc-btn small selected" onclick="selectSize(this,12)">Средний</div>
+        <div class="mc-btn small" onclick="selectSize(this,16)">Большой</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <div class="mc-btn small" onclick="showScreen('menu')">Отмена</div>
+      <div class="mc-btn small" style="background:#4CAF50;" onclick="createNewWorld()">Создать мир</div>
+    </div>
+  </div>
+
+  <div id="settings-menu" class="screen dark hidden">
+    <div class="mc-logo" id="lbl-settings-title" style="font-size:20px;margin-bottom:6px;">Настройки</div>
+    <div class="form-box">
+      <span>Язык / Language:</span>
+      <div class="btn-group" id="lang-group">
+        <div class="mc-btn small selected" onclick="setLanguage(this, 'ru')">Русский</div>
+        <div class="mc-btn small" onclick="setLanguage(this, 'en')">English</div>
+      </div>
+      <span id="lbl-cam">Вид камеры:</span>
+      <div class="btn-group" id="cam-mode-group">
+        <div class="mc-btn small selected" id="btn-cam-1" onclick="setCameraMode(this, 1)">1-е лицо</div>
+        <div class="mc-btn small" id="btn-cam-3" onclick="setCameraMode(this, 3)">3-е лицо</div>
+        <div class="mc-btn small" id="btn-cam-2" onclick="setCameraMode(this, 2)">2-е лицо</div>
+      </div>.                             <label><span id="lbl-sens">Чувствительность</span>: <span id="sens-val">6</span></label>
+      <label><span id="lbl-dist">Дальность обзора</span>: <span id="dist-val">22</span></label>
+      <input type="range" min="10" max="34" value="22" oninput="updateDist(this.value)">
+    </div>
+    <div class="mc-btn" id="btn-support" onclick="showScreen('support')">Помощь и поддержка</div>
+    <div class="mc-btn" id="btn-settings-done" onclick="showScreen('menu')">Готово</div>
+  </div>
+
+  <div id="support-menu" class="screen dark hidden">
+    <div class="mc-logo" style="font-size:20px;margin-bottom:6px;">Помощь и поддержка</div>
+    <div class="form-box" style="text-align:center;line-height:1.4;font-size:12px;">
+      <p>Напишите на</p>
+      <p style="color:#ff5;font-weight:bold;margin:4px 0;user-select:text;-webkit-user-select:text;">807stro47kasup272portminicraft1@mail.ru</p>
+      <p>и опишите проблему или предложите идею для обновления.</p>
+    </div>
+    <div class="mc-btn" id="btn-copy-mail" onclick="copySupportMail()">Скопировать почту</div>
+    <div class="mc-btn" onclick="showScreen('settings')">Назад</div>
+  </div>
+
+  <div id="inv-modal" class="hidden">
+    <div class="inv-window">
+      <div style="color:#222;font-weight:bold;font-size:13px;">Предметы и Блоки</div>
+      <div class="inv-grid" id="inv-grid"></div>
+      <div class="mc-btn small" onclick="toggleInv(false)">Закрыть</div>
+    </div>
+  </div>
+
+  <div id="hud" class="hidden">
+    <div id="pause-btn" onclick="pauseGame()">II</div>
+    <div id="time-btn" onclick="toggleDayNight()">День / Ночь</div>
+    <div id="world-info">Мир: <span id="hud-world-name">Мир</span><br><span id="hud-mode">Выживание</span></div>
+    <div id="crosshair"></div>
+    <div id="surv-bars" style="position:fixed;bottom:52px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:20;font-size:11px;text-shadow:1px 1px #000;white-space:nowrap;">
+      <div id="hp-bar" style="color:#ff5252;">♥♥♥♥♥♥♥♥♥♥</div>
+      <div id="food-bar" style="color:#ffb74d;">🍗🍗🍗🍗🍗🍗🍗🍗🍗🍗</div>
+    </div>
+    <div id="hotbar">
+      <div class="slot active" onclick="pickSlot(0)"></div>
+      <div class="slot" onclick="pickSlot(1)"></div>
+      <div class="slot" onclick="pickSlot(2)"></div>
+      <div class="slot" onclick="pickSlot(3)"></div>
+      <div class="slot" onclick="pickSlot(4)"></div>
+      <div class="slot" style="background:#555;" onclick="toggleInv(true)">...</div>
+    </div>
+    <div id="dpad">
+      <div class="dpad-btn dpad-diag hidden-diag" id="dp-ul" style="justify-self:end;">◤</div>
+      <div class="dpad-btn" id="dp-up">▲</div>
+      <div class="dpad-btn dpad-diag hidden-diag" id="dp-ur" style="justify-self:start;">◥</div>
+      <div class="dpad-btn" id="dp-left">◄</div>
+      <div class="dpad-btn" id="dp-mid" style="font-size:12px;">◇</div>
+      <div class="dpad-btn" id="dp-right">►</div>
+      <div></div>
+      <div class="dpad-btn" id="dp-down">▼</div>
+      <div></div>
+    </div>
+    <div id="actions">
+      <div class="row hidden" id="fly-controls">
+        <div class="btn" id="btn-fly-down" style="border-color:#90caf9;">ВНИЗ</div>
+        <div class="btn" id="btn-fly-up" style="border-color:#90caf9;">ВВЕРХ</div>
+      </div>
+      <div class="row"><div class="btn" id="btn-jump">ПРЫЖОК<br>(x2 полёт)</div></div>
+      <div class="row">
+        <div class="btn" id="btn-break" style="border-color:#ff5252">ЛОМАТЬ</div>
+        <div class="btn" id="btn-place" style="border-color:#69f0ae">СТАВИТЬ</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
