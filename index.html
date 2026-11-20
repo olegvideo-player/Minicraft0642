@@ -102,9 +102,7 @@
       <div class="mc-btn small" onclick="showScreen('menu')">Отмена</div>
       <div class="mc-btn small" style="background:#4CAF50;" onclick="createNewWorld()">Создать мир</div>
     </div>
-  </div>
-
-  <div id="settings-menu" class="screen dark hidden">
+  </div>   <div id="settings-menu" class="screen dark hidden">
     <div class="mc-logo" id="lbl-settings-title" style="font-size:20px;margin-bottom:6px;">Настройки</div>
     <div class="form-box">
       <span>Язык / Language:</span>
@@ -117,12 +115,24 @@
         <div class="mc-btn small selected" id="btn-cam-1" onclick="setCameraMode(this, 1)">1-е лицо</div>
         <div class="mc-btn small" id="btn-cam-3" onclick="setCameraMode(this, 3)">3-е лицо</div>
         <div class="mc-btn small" id="btn-cam-2" onclick="setCameraMode(this, 2)">2-е лицо</div>
-      </div>.                             <label><span id="lbl-sens">Чувствительность</span>: <span id="sens-val">6</span></label>
+      </div>
+      <label><span id="lbl-sens">Чувствительность</span>: <span id="sens-val">6</span></label>
+      <input type="range" min="2" max="15" value="6" oninput="updateSens(this.value)">
       <label><span id="lbl-dist">Дальность обзора</span>: <span id="dist-val">22</span></label>
       <input type="range" min="10" max="34" value="22" oninput="updateDist(this.value)">
     </div>
+    <div class="mc-btn" id="btn-pc-controls" onclick="showScreen('pc-controls')">Управление ПК</div>
     <div class="mc-btn" id="btn-support" onclick="showScreen('support')">Помощь и поддержка</div>
     <div class="mc-btn" id="btn-settings-done" onclick="showScreen('menu')">Готово</div>
+  </div>
+
+  <div id="pc-controls-menu" class="screen dark hidden">
+    <div class="mc-logo" id="lbl-pc-title" style="font-size:20px;margin-bottom:6px;">Управление ПК</div>
+    <div class="form-box" id="pc-binds-list" style="width:280px;max-height:55vh;overflow-y:auto;gap:4px;"></div>
+    <div style="display:flex;gap:10px;">
+      <div class="mc-btn small" id="btn-pc-reset" onclick="resetPcBinds()">Сброс</div>
+      <div class="mc-btn small" id="btn-pc-done" onclick="showScreen('settings')">Готово</div>
+    </div>
   </div>
 
   <div id="support-menu" class="screen dark hidden">
