@@ -2,7 +2,7 @@
 
 Лёгкая браузерная 3D-песочница по мотивам классического Minecraft, работающая прямо в браузере на ПК и смартфонах без установки.
 
-🌐 **Играть онлайн:** [olegvideo-player.github.io/Minicraft0642](https://github.io)
+🌐 **Играть онлайн:** [https://olegvideo-player.github.io/Minicraft0642/]
 
 ---
 
