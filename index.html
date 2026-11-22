@@ -3,129 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MiniCraft0642 v0.5</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
-    body { overflow: hidden; background: #87CEEB; font-family: monospace, sans-serif; touch-action: none; }
-    canvas { display: block; width: 100vw; height: 100vh; position: fixed; inset: 0; z-index: 1; }
-    .screen { position: fixed; inset: 0; background: rgba(0,0,0,0.25); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; color: #fff; padding: 10px; }
-    .screen.dark { background: rgba(0,0,0,0.85); }
+  <title>MiniCraft0642 v0.6</title>
+  <style>   @keyframes pulse { 0%, 100% { transform: rotate(-6deg) scale(1); } 50% { transform: rotate(-6deg) scale(1.1); } }
+    .mc-splash { color: #ffff55; font-size: 13px; text-shadow: 1px 1px 0 #3f3f00; transform: rotate(-6deg); margin: -6px 0 8px 140px; animation: pulse 1.2s infinite; }
+
+    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; font-family: monospace; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: #87CEEB; touch-action: none; }  
+    
+    canvas { display: block; width: 100%; height: 100%; }
+    .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 100; color: #fff; gap: 10px; }
+    .screen.dark { background: rgba(15,15,15,0.92); }
     .hidden { display: none !important; }
-    .mc-logo { font-size: 30px; font-weight: 900; text-shadow: 0 3px 0 #3f3f3f, 0 5px 8px #000; margin-bottom: 2px; }
-    @keyframes splashPulse { 0%, 100% { transform: rotate(-6deg) scale(1); } 50% { transform: rotate(-6deg) scale(1.16); } }
-    .mc-splash { color: #ffff55; font-size: 13px; font-weight: bold; text-shadow: 2px 2px #3f3f00; margin-top: -6px; margin-bottom: 12px; margin-left: 120px; animation: splashPulse 0.85s infinite ease-in-out; }
-    .mc-btn { width: 220px; padding: 8px; margin: 3px 0; background: rgba(114,114,114,0.95); color: #fff; font-weight: bold; font-size: 13px; text-align: center; border: 2px solid #000; box-shadow: inset 2px 2px #aaa, inset -2px -3px #444; text-shadow: 2px 2px #222; }
-    .mc-btn:active { background: #5a7d4c; }
-    .mc-btn.small { width: 106px; padding: 6px 4px; font-size: 11px; }
-    .mc-btn.selected { background: #4CAF50; }
-    .form-box { background: rgba(30,30,30,0.95); border: 2px solid #666; padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; width: 270px; margin-bottom: 6px; font-size: 11px; }
-    .btn-group { display: flex; gap: 5px; justify-content: space-between; }
-    input[type=text] { background: #111; border: 2px solid #777; color: #fff; padding: 5px; user-select: text; -webkit-user-select: text; touch-action: auto; }
-    .skin-layout { display: flex; gap: 14px; align-items: center; margin-bottom: 8px; }
-    #skin-preview { width: 90px; height: 150px; background: rgba(255,255,255,0.1); border: 2px solid #777; }
-    .color-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .swatch { width: 22px; height: 22px; border: 2px solid #fff; border-radius: 4px; }
-    #pause-btn { position: fixed; top: 10px; left: 10px; width: 34px; height: 34px; background: rgba(0,0,0,0.6); border: 2px solid #fff; border-radius: 6px; color: #fff; font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 30; }
-    #time-btn { position: fixed; top: 10px; left: 52px; padding: 0 8px; height: 34px; background: rgba(0,0,0,0.6); border: 2px solid #ffd54f; border-radius: 6px; color: #ffd54f; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; z-index: 30; }
-    #craft-btn { position: fixed; top: 10px; left: 145px; padding: 0 8px; height: 34px; background: rgba(121,85,72,0.85); border: 2px solid #fff; border-radius: 6px; color: #fff; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; z-index: 30; }
-    #world-info { position: fixed; top: 10px; right: 12px; color: #fff; font-size: 11px; text-shadow: 1px 1px #000; z-index: 30; text-align: right; }
-    #crosshair { position: fixed; top: 50%; left: 50%; width: 16px; height: 16px; transform: translate(-50%,-50%); pointer-events: none; z-index: 10; }
-    #crosshair::before, #crosshair::after { content: ''; position: absolute; background: #fff; }
+    .mc-logo { font-size: 28px; font-weight: bold; color: #fff; text-shadow: 3px 3px 0 #3f3f3f; letter-spacing: 2px; }
+    .mc-splash { color: #ffff55; font-size: 13px; text-shadow: 1px 1px 0 #3f3f00; transform: rotate(-6deg); margin: -6px 0 8px 140px; }
+    .mc-btn { width: 230px; padding: 11px; background: #727272; border: 2px solid #000; box-shadow: inset 2px 2px #aaa, inset -2px -2px #444; color: #fff; text-align: center; font-size: 14px; font-weight: bold; text-shadow: 1px 1px #222; cursor: pointer; }
+    .mc-btn:active { background: #5a7d5a; box-shadow: inset 2px 2px #444, inset -2px -2px #aaa; }
+    .mc-btn.small { width: auto; padding: 7px 10px; font-size: 12px; flex: 1; }
+    .mc-btn.selected { background: #4CAF50; box-shadow: inset 2px 2px #81C784, inset -2px -2px #2E7D32; }
+    .form-box { width: 260px; display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.55); padding: 12px; border: 2px solid #555; font-size: 12px; }
+    .mc-input { width: 100%; padding: 8px; background: #111; border: 2px solid #777; color: #fff; font-size: 13px; outline: none; user-select: text; -webkit-user-select: text; }
+    .btn-row { display: flex; gap: 6px; width: 100%; }
+    .color-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+    .swatches { display: flex; gap: 5px; }
+    .swatch { width: 22px; height: 22px; border: 2px solid #fff; cursor: pointer; }
+    #crosshair { position: fixed; top: 50%; left: 50%; width: 16px; height: 16px; transform: translate(-50%, -50%); pointer-events: none; z-index: 10; }
+    #crosshair::before, #crosshair::after { content: ''; position: absolute; background: rgba(255,255,255,0.9); }
     #crosshair::before { top: 7px; left: 0; width: 16px; height: 2px; }
-    #crosshair::after { top: 0; left: 7px; width: 2px; height: 16px; }
-    #dpad { position: fixed; bottom: 14px; left: 16px; display: grid; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); gap: 3px; z-index: 25; }
-    .dpad-btn { background: rgba(130, 130, 130, 0.55); border: 2px solid rgba(40, 40, 40, 0.75); box-shadow: inset 2px 2px rgba(255,255,255,0.35), inset -2px -2px rgba(0,0,0,0.4); color: rgba(30, 30, 30, 0.85); font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
-    .dpad-btn.active { background: rgba(180, 180, 180, 0.85); transform: scale(0.95); }
-    .dpad-diag { width: 38px; height: 38px; align-self: end; transition: opacity 0.1s; }
-    .dpad-diag.hidden-diag { opacity: 0; pointer-events: none; }
-    #actions { position: fixed; bottom: 16px; right: 18px; display: flex; flex-direction: column; gap: 7px; z-index: 20; }
-    .row { display: flex; gap: 7px; justify-content: flex-end; }
-    .btn { width: 58px; height: 48px; background: rgba(0,0,0,0.6); border: 2px solid #fff; border-radius: 9px; color: #fff; font-weight: bold; font-size: 10px; display: flex; align-items: center; justify-content: center; text-align: center; }
-    #hotbar { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; z-index: 20; background: rgba(0,0,0,0.6); padding: 4px; border: 2px solid #333; }
-    .slot { width: 34px; height: 34px; border: 2px solid #222; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 9px; text-align: center; white-space: pre-line; text-shadow: 1px 1px #000; }
-    .slot.active { border: 3px solid #fff; transform: scale(1.08); }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 90; }
-    .inv-window { background: #8b8b8b; border: 3px solid #222; padding: 10px; display: flex; flex-direction: column; gap: 8px; align-items: center; max-width: 92vw; }
-    .inv-grid { display: grid; grid-template-columns: repeat(5, 46px); gap: 5px; }
-    .inv-item { width: 46px; height: 46px; border: 2px solid #333; display: flex; align-items: flex-end; justify-content: center; font-size: 8px; color: #fff; text-shadow: 1px 1px #000; padding-bottom: 2px; text-align: center; }
-    .craft-list { display: flex; flex-direction: column; gap: 5px; width: 265px; max-height: 52vh; overflow-y: auto; }
-    .craft-row { background: #555; border: 2px solid #222; padding: 6px 8px; display: flex; justify-content: space-between; align-items: center; color: #fff; font-size: 11px; }
-    .world-card { background: rgba(50,50,50,0.95); border: 2px solid #777; padding: 6px 8px; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+    #crosshair::after { left: 7px; top: 0; width: 2px; height: 16px; }
+    #pause-btn { position: fixed; top: 10px; right: 10px; width: 34px; height: 34px; background: rgba(0,0,0,0.55); border: 2px solid #fff; color: #fff; font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 20; font-size: 13px; }
+    #time-btn { position: fixed; top: 10px; right: 52px; height: 34px; padding: 0 8px; background: rgba(0,0,0,0.55); border: 2px solid #fff; color: #ffeb3b; font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 20; font-size: 11px; }
+    #world-info { position: fixed; top: 10px; left: 10px; color: #fff; text-shadow: 1px 1px #000; font-size: 11px; z-index: 20; pointer-events: none; }
+    #hotbar { position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; background: rgba(0,0,0,0.65); padding: 4px; border: 2px solid #444; z-index: 20; }
+    .slot { width: 34px; height: 34px; border: 2px solid #666; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 8px; font-weight: bold; text-shadow: 1px 1px #000; text-align: center; white-space: pre-line; line-height: 1.05; }
+    .slot.active { border-color: #fff; transform: scale(1.12); box-shadow: 0 0 6px #fff; }
+    #dpad { position: fixed; bottom: 54px; left: 12px; width: 144px; height: 144px; display: grid; grid-template-columns: repeat(3, 46px); grid-template-rows: repeat(3, 46px); gap: 3px; z-index: 20; }
+    .dpad-btn { background: rgba(130, 130, 130, 0.45); border: 2px solid rgba(255, 255, 255, 0.35); color: #fff; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; text-shadow: 1px 1px #000; pointer-events: none; }
+    .dpad-btn.active { background: rgba(255, 255, 255, 0.55); border-color: #fff; transform: scale(0.95); }
+    .dpad-diag { width: 38px; height: 38px; align-self: end; font-size: 14px; }
+    .hidden-diag { visibility: hidden; }
+    #actions { position: fixed; bottom: 54px; right: 12px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; z-index: 20; }
+    .row { display: flex; gap: 6px; }
+    .btn { width: 62px; height: 42px; background: rgba(0,0,0,0.55); border: 2px solid rgba(255,255,255,0.65); color: #fff; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 6px; text-align: center; }
+    .btn.holding { background: rgba(255, 82, 82, 0.45); transform: scale(0.95); }
+    #inv-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 120; }
+    .inv-window { background: #c6c6c6; border: 3px solid #fff; padding: 12px; width: 295px; display: flex; flex-direction: column; gap: 8px; }
+    .inv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; max-height: 52vh; overflow-y: auto; }
+    .inv-item { height: 42px; border: 2px solid #444; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; color: #fff; text-shadow: 1px 1px #000; text-align: center; padding: 2px; }
+    #toast-msg { position: fixed; top: 52px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); border: 1px solid #fff; color: #ffff55; padding: 5px 10px; font-size: 11px; z-index: 30; pointer-events: none; }
   </style>
 </head>
-<body>
+
   <div id="menu" class="screen">
     <div class="mc-logo">MiniCraft0642</div>
-    <div class="mc-splash">Update v0.5!</div>
+    <div class="mc-splash">Update v0.6!</div>
     <div class="mc-btn" onclick="startContinue()">Играть (Миры)</div>
     <div class="mc-btn" onclick="showScreen('skin')">Редактор скина</div>
     <div class="mc-btn" onclick="showScreen('settings')">Настройки</div>
   </div>
-        <div class="mc-btn" style="background:#4CAF50;" onclick="showScreen('create')">+ Создать новый мир</div>
-
-
-  <div id="skin-menu" class="screen dark hidden">
-    <div class="mc-logo" style="font-size:20px;margin-bottom:6px;">Редактор Скина</div>
-    <div class="skin-layout">
-      <canvas id="skin-preview" width="90" height="150"></canvas>
-      <div class="form-box" style="width:220px;margin:0;">
-        <div class="color-row"><span>Волосы:</span><div style="display:flex;gap:4px;" id="hair-colors"></div></div>
-        <div class="color-row"><span>Кожа:</span><div style="display:flex;gap:4px;" id="skin-colors"></div></div>
-        <div class="color-row"><span>Майка:</span><div style="display:flex;gap:4px;" id="shirt-colors"></div></div>
-        <div class="color-row"><span>Штаны:</span><div style="display:flex;gap:4px;" id="pants-colors"></div></div>
-        <input type="file" id="skin-file-input" accept="image/png,image/*" style="display:none;" onchange="importMinecraftSkin(this)">
-        <div class="mc-btn" style="width:100%;padding:6px;font-size:11px;background:#1976D2;" onclick="document.getElementById('skin-file-input').click()">Импорт скина (.png)</div>
-      </div>
+  <div id="skin-menu" class="screen dark hidden" style="gap:6px;padding:8px;">
+    <div class="mc-logo" style="font-size:18px;margin-bottom:2px;">Редактор Скина</div>
+    <canvas id="skin-preview" width="90" height="150" style="width:90px;height:150px;flex-shrink:0;background:#222;border:2px solid #777;"></canvas>
+    <div class="form-box" style="width:260px;gap:5px;padding:8px;">
+      <div class="color-row"><span>Волосы:</span><div class="swatches" id="hair-colors"></div></div>
+      <div class="color-row"><span>Кожа:</span><div class="swatches" id="skin-colors"></div></div>
+      <div class="color-row"><span>Майка:</span><div class="swatches" id="shirt-colors"></div></div>
+      <div class="color-row"><span>Штаны:</span><div class="swatches" id="pants-colors"></div></div>
+      <input type="file" id="skin-file-input" accept="image/png" class="hidden" onchange="importMinecraftSkin(this)">
+      <div class="mc-btn small" style="margin-top:2px;" onclick="document.getElementById('skin-file-input').click()">Импорт скина (.png)</div>
     </div>
-    <div class="mc-btn" onclick="saveSkin();showScreen('menu')">Сохранить и выйти</div>
+    <div class="mc-btn" style="padding:9px;" onclick="saveSkin(); showScreen('menu')">Сохранить и выйти</div>
   </div>
+
+  
+</div></div></div>
   <div id="create-menu" class="screen dark hidden">
-    <div class="mc-logo" style="font-size:20px;margin-bottom:6px;">Создание мира</div>
+    <div class="mc-logo" style="font-size:22px;margin-bottom:6px;">Создание мира</div>
     <div class="form-box">
       <span>Название мира:</span>
-      <input type="text" id="world-name-input" value="Мой Мир" maxlength="18">
+      <input type="text" id="world-name-input" class="mc-input" value="Новый мир" maxlength="18">
       <span>Режим игры:</span>
-      <div class="btn-group" id="game-mode-group">
-        <div class="mc-btn small selected" onclick="selectGameMode(this,'survival')">Выживание</div>
-        <div class="mc-btn small" onclick="selectGameMode(this,'creative')">Креатив</div>
+      <div class="btn-row" id="game-mode-group">
+        <div class="mc-btn small selected" onclick="selectGameMode(this, 'survival')">Выживание</div>
+        <div class="mc-btn small" onclick="selectGameMode(this, 'creative')">Креатив</div>
       </div>
       <span>Тип генерации:</span>
-      <div class="btn-group" id="gen-type-group">
-        <div class="mc-btn small selected" onclick="selectType(this,'hills')">Холмы</div>
-        <div class="mc-btn small" onclick="selectType(this,'flat')">Плоский</div>
-        <div class="mc-btn small" onclick="selectType(this,'island')">Остров</div>
+      <div class="btn-row" id="gen-type-group">
+        <div class="mc-btn small selected" onclick="selectType(this, 'hills')">Холмы</div>
+        <div class="mc-btn small" onclick="selectType(this, 'flat')">Плоский</div>
+        <div class="mc-btn small" onclick="selectType(this, 'island')">Остров</div>
       </div>
       <span>Размер мира:</span>
-      <div class="btn-group" id="gen-size-group">
-        <div class="mc-btn small" onclick="selectSize(this,8)">Малый</div>
-        <div class="mc-btn small selected" onclick="selectSize(this,12)">Средний</div>
-        <div class="mc-btn small" onclick="selectSize(this,16)">Большой</div>
+      <div class="btn-row" id="gen-size-group">
+        <div class="mc-btn small" onclick="selectSize(this, 8)">Малый</div>
+        <div class="mc-btn small selected" onclick="selectSize(this, 12)">Средний</div>
+        <div class="mc-btn small" onclick="selectSize(this, 16)">Большой</div>
       </div>
     </div>
-    <div style="display:flex;gap:10px;">
-      <div class="mc-btn small" onclick="openWorldsMenu()">Отмена</div>
-      <div class="mc-btn small" style="background:#4CAF50;" onclick="createNewWorld()">Создать мир</div>
+    <div class="btn-row" style="width:260px;">
+      <div class="mc-btn small" onclick="startContinue()">Отмена</div>
+      <div class="mc-btn small selected" onclick="createNewWorld()">Создать мир</div>
     </div>
   </div>
 
   <div id="settings-menu" class="screen dark hidden">
-    <div class="mc-logo" id="lbl-settings-title" style="font-size:20px;margin-bottom:6px;">Настройки</div>
+    <div class="mc-logo" id="lbl-settings-title" style="font-size:22px;margin-bottom:6px;">Настройки</div>
     <div class="form-box">
       <span>Язык / Language:</span>
-      <div class="btn-group" id="lang-group">
+      <div class="btn-row" id="lang-group">
         <div class="mc-btn small selected" onclick="setLanguage(this, 'ru')">Русский</div>
         <div class="mc-btn small" onclick="setLanguage(this, 'en')">English</div>
       </div>
       <span id="lbl-cam">Вид камеры:</span>
-      <div class="btn-group" id="cam-mode-group">
+      <div class="btn-row" id="cam-mode-group">
         <div class="mc-btn small selected" id="btn-cam-1" onclick="setCameraMode(this, 1)">1-е лицо</div>
         <div class="mc-btn small" id="btn-cam-3" onclick="setCameraMode(this, 3)">3-е лицо</div>
         <div class="mc-btn small" id="btn-cam-2" onclick="setCameraMode(this, 2)">2-е лицо</div>
       </div>
-      <label><span id="lbl-sens">Чувствительность</span>: <span id="sens-val">6</span></label>
+      <span><span id="lbl-sens">Чувствительность</span>: <b id="sens-val">6</b></span>
       <input type="range" min="2" max="15" value="6" oninput="updateSens(this.value)">
-      <label><span id="lbl-dist">Дальность обзора</span>: <span id="dist-val">22</span></label>
-      <input type="range" min="10" max="34" value="22" oninput="updateDist(this.value)">
+      <span><span id="lbl-dist">Дальность обзора</span>: <b id="dist-val">22</b></span>
+      <input type="range" min="10" max="32" value="22" oninput="updateDist(this.value)">
     </div>
     <div class="mc-btn" id="btn-pc-controls" onclick="showScreen('pc-controls')">Управление ПК</div>
     <div class="mc-btn" id="btn-support" onclick="showScreen('support')">Помощь и поддержка</div>
@@ -134,62 +131,49 @@
 
   <div id="pc-controls-menu" class="screen dark hidden">
     <div class="mc-logo" id="lbl-pc-title" style="font-size:20px;margin-bottom:6px;">Управление ПК</div>
-    <div class="form-box" id="pc-binds-list" style="width:280px;max-height:55vh;overflow-y:auto;gap:4px;"></div>
-    <div style="display:flex;gap:10px;">
+    <div class="form-box" id="pc-binds-list" style="width:280px;gap:6px;"></div>
+    <div class="btn-row" style="width:280px;">
       <div class="mc-btn small" id="btn-pc-reset" onclick="resetPcBinds()">Сброс</div>
-      <div class="mc-btn small" id="btn-pc-done" onclick="showScreen('settings')">Готово</div>
+      <div class="mc-btn small selected" id="btn-pc-done" onclick="showScreen('settings')">Готово</div>
     </div>
   </div>
 
   <div id="support-menu" class="screen dark hidden">
     <div class="mc-logo" style="font-size:20px;margin-bottom:6px;">Помощь и поддержка</div>
-    <div class="form-box" style="text-align:center;line-height:1.4;font-size:12px;">
+    <div class="form-box" style="text-align:center;line-height:1.4;">
       <p>Напишите на</p>
-      <p style="color:#ff5;font-weight:bold;margin:4px 0;user-select:text;-webkit-user-select:text;">807stro47kasup272portminicraft1@mail.ru</p>
+      <p style="color:#ffff55;word-break:break-all;user-select:text;-webkit-user-select:text;">807stro47kasup272portminicraft1@mail.ru</p>
       <p>и опишите проблему или предложите идею для обновления.</p>
     </div>
     <div class="mc-btn" id="btn-copy-mail" onclick="copySupportMail()">Скопировать почту</div>
-    <div class="mc-btn" onclick="showScreen('settings')">Назад</div>
-  </div>
-<div id="worlds-modal" class="screen dark hidden">
+    <div class="mc-btn" onclick="showScreen('settings')">Назад</div> </div></div></div>
+    <div id="worlds-modal" class="screen dark hidden" style="z-index:110;">
     <div class="mc-logo" style="font-size:20px;margin-bottom:6px;">Сохранённые миры</div>
-    <div class="form-box" id="worlds-list" style="width:280px;max-height:50vh;overflow-y:auto;"></div>
+    <div class="form-box" id="worlds-list" style="width:280px;max-height:55vh;overflow-y:auto;"></div>
     <div class="mc-btn" onclick="showScreen('menu')">Назад</div>
   </div>
 
-  <div id="craft-modal" class="screen dark hidden">
-    <div class="mc-logo" style="font-size:20px;margin-bottom:6px;">Верстак / Крафт</div>
-    <div class="form-box" id="craft-list" style="width:280px;max-height:55vh;overflow-y:auto;"></div>
+  <div id="craft-modal" class="screen dark hidden" style="z-index:115;">
+    <div class="mc-logo" id="station-title" style="font-size:20px;margin-bottom:6px;">Верстак / Крафт</div>
+    <div class="form-box" id="craft-list" style="width:285px;max-height:55vh;overflow-y:auto;"></div>
     <div class="mc-btn" onclick="toggleCraft(false)">Закрыть</div>
   </div>
-  <div id="inv-modal" class="modal-overlay hidden">
+
+  <div id="inv-modal" class="hidden">
     <div class="inv-window">
       <div style="color:#222;font-weight:bold;font-size:13px;">Предметы и Блоки</div>
       <div class="inv-grid" id="inv-grid"></div>
       <div class="mc-btn small" onclick="toggleInv(false)">Закрыть</div>
     </div>
   </div>
-
-      <div id="worlds-modal" class="screen dark hidden" style="z-index:110;">
-    <div class="mc-logo" style="font-size:20px;margin-bottom:6px;">Сохранённые миры</div>
-    <div class="form-box" id="worlds-list" style="width:280px;max-height:50vh;overflow-y:auto;"></div>
-    <div class="mc-btn" style="background:#4CAF50;" onclick="showScreen('create')">+ Создать новый мир</div>
-    <div class="mc-btn" onclick="showScreen('menu')">Назад</div>
-  </div>
-
-
-  <div id="craft-modal" class="screen dark hidden" style="z-index:110;">
-    <div class="mc-logo" style="font-size:20px;margin-bottom:6px;">Верстак / Крафт</div>
-    <div class="form-box" id="craft-list" style="width:280px;max-height:55vh;overflow-y:auto;"></div>
-    <div class="mc-btn" onclick="toggleCraft(false)">Закрыть</div>
-  </div>
-
-
+</div></div></div>
   <div id="hud" class="hidden">
+
+
     <div id="pause-btn" onclick="pauseGame()">II</div>
     <div id="time-btn" onclick="toggleDayNight()">День / Ночь</div>
-    <div id="craft-btn" onclick="toggleCraft(true)">Крафт</div>
     <div id="world-info">Мир: <span id="hud-world-name">Мир</span><br><span id="hud-mode">Выживание</span></div>
+    <div id="toast-msg" class="hidden"></div>
     <div id="crosshair"></div>
     <div id="surv-bars" style="position:fixed;bottom:52px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:20;font-size:11px;text-shadow:1px 1px #000;white-space:nowrap;">
       <div id="hp-bar" style="color:#ff5252;">♥♥♥♥♥♥♥♥♥♥</div>
@@ -226,7 +210,11 @@
       </div>
     </div>
   </div>
-
+<div id="worlds-modal" class="screen dark hidden" style="z-index:110;">
+    <div class="mc-logo" style="font-size:20px;margin-bottom:6px;">Сохранённые миры</div>
+    <div class="form-box" id="worlds-list" style="width:280px;max-height:55vh;overflow-y:auto;"></div>
+    <div class="mc-btn" onclick="showScreen('menu')">Назад</div>
+  </div>
   <script src="main.js"></script>
 </body>
 </html>
