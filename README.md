@@ -33,4 +33,4 @@
 ## 📱 Версия для телефонов на Java ME / J2ME (`.jar`)
 Ищете версию для классических кнопочных и сенсорных телефонов (**Nokia, Sony Ericsson, Samsung, Motorola, Siemens**) или эмулятора **J2ME Loader**?  
 Скачивайте отдельный ультралёгкий билд (~11 КБ) со звуком и настройками здесь:  
-👉 **[Minicraft0642-J2me-](https://github.com)**
+👉 **https://github.com/olegvideo-player/Minicraft0642-J2me-
